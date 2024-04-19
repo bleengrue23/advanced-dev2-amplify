@@ -1,0 +1,20 @@
+type Category @model @auth(rules: [{allow: owner}, {allow: public, operations: [read]}, {allow: private, operations: [read]}, {allow: groups, groups: ["admin"], operations: [read, create, update, delete]}]) {
+  id: ID!
+  name: String
+  Items: [Product] @hasMany(indexName: "byCategory", fields: ["id"])
+}
+
+type Product @model @auth(rules: [{allow: public, operations: [read]}, {allow: owner}, {allow: groups, groups: ["admin"], operations: [read, create, update, delete]}]) {
+  id: ID!
+  name: String!
+  description: String
+  price: String
+  image: String
+  categoryID: ID! @index(name: "byCategory")
+  carts: [Cart] @manyToMany(relationName: "CartProduct")
+}
+
+type Cart @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  items: [Product] @manyToMany(relationName: "CartProduct")
+} 
